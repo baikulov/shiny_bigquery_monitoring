@@ -24,7 +24,7 @@ server <- function(input, output) {
   
   con2 <- dbConnect(drv=driver,
                    dbname = "shiny",
-                   host = "localhost",
+                   host = Sys.getenv('DATABASE'),
                    port = 5432,
                    user = "user1",
                    password = "password1")
@@ -33,7 +33,7 @@ server <- function(input, output) {
   #database_list <- dbGetQuery(con, "SELECT datname FROM pg_database;")
   
   # # # список таблиц
-  list <- dbGetQuery(con2,"SELECT table_name FROM shiny.information_schema.tables")
+  #list <- dbGetQuery(con2,"SELECT table_name FROM shiny.information_schema.tables")
   
   # пишем из BQ в POSTGRE
   dbWriteTable(con2, "metadata", query, row.names=FALSE, append=TRUE)
