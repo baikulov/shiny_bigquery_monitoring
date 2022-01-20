@@ -16,7 +16,6 @@ server <- function(input, output) {
     
     req(input$file)
     
-    #system("mkdir keys")
     file.copy(input$file$datapath, "keys/key2.json", overwrite = TRUE)
     
     bq_auth(path = "keys/key2.json")
