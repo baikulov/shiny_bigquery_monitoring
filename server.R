@@ -16,9 +16,10 @@ server <- function(input, output) {
     
     req(input$file)
     
-    file.copy(input$file$datapath, "key2.json", overwrite = TRUE)
+    system("mkdir keys")
+    file.copy(input$file$datapath, "keys/key2.json", overwrite = TRUE)
     
-    bq_auth(path = "key2.json")
+    bq_auth(path = "keys/key2.json")
     # создаём подключение к БД для выгрузки данных через SQL
     con <- dbConnect(drv = bigquery(),
                      project = Sys.getenv("BQ_PROJECT"),
