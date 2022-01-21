@@ -20,9 +20,11 @@ ui <- dashboardPage(
           multiple = FALSE,
           accept = c(".json")
         ),
-        actionButton('upload', label = 'Подключиться'),
+        actionButton('connect', label = 'Подключиться'),
         uiOutput('bq_projects'),
         uiOutput('bq_datasets'),
+        uiOutput('bq_tables'),
+        actionButton('upload', label = 'Загрузить'),
         tableOutput('billing')
       )
       

@@ -3,49 +3,58 @@ library(bs4Dash)
 # library(dplyr)
 library(bigrquery)
 library(DBI)
-library(tidyr)
 # library(RPostgreSQL)
 
 server <- function(input, output) {
   
+  
+  # credentials
   observeEvent(input$file, {
     file.copy(input$file$datapath, "keys/key2.json", overwrite = TRUE)
   })
   
-  
+  # projects
   projects <- reactive({
-    req(input$upload)
+    req(input$file)
+    req(input$connect)
     bq_auth(path = "keys/key2.json")
     bq_projects()
   })
   
-  # UI элементы
   output$bq_projects <- renderUI({
-    bq_auth(path = "keys/key2.json")
     selectInput('projects', 'Select project:', selected = NULL, multiple = FALSE, selectize=TRUE, projects())
   })
   
+  
+  # datasets
   df <- reactive({
     req(input$projects)
-    df <- do.call(rbind.data.frame, bq_project_datasets(input$projects[1]))
+    df <- do.call(rbind.data.frame, bq_project_datasets(input$projects))
   })
   
-  
-
-  # UI элементы
   output$bq_datasets <- renderUI({
-    bq_auth(path = "keys/key2.json")
     selectInput('datasets', 'Select dataset:', selected = NULL, multiple = FALSE, selectize=TRUE, df()$dataset)
   })
-    # bq_projects <-  reactive({
-    #   req(input$file)
-    #   file.copy(input$file$datapath, "keys/key2.json", overwrite = TRUE)
-    #   bq_auth(path = "keys/key2.json")
-    #   projects <- bq_projects()
-    # })
-    # 
-    # output$bq_projects <- renderUI({
-    #   selectInput('projects', 'Sources:', selected = NULL, multiple = TRUE, selectize=TRUE, bq_projects())
-    # })
+  
+  
+  # tables
+  tbl <- reactive({
+    req(input$datasets)
+    tbl <- do.call(rbind.data.frame, bq_dataset_tables(paste0(input$projects,".",input$datasets)))
+  })
 
+  # UI элементы
+  output$bq_tables <- renderUI({
+    selectInput('tables', 'Select table:', selected = NULL, multiple = FALSE, selectize=TRUE, tbl()$table)
+  })
+  
+  
+  data <- eventReactive(input$upload, {
+    bq_table_download(paste0(input$projects, ".", input$datasets, ".", input$tables))        
+  })
+  
+  
+  output$billing <- renderTable({
+    data()
+  })
 }
