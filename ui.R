@@ -1,6 +1,6 @@
 library(bs4Dash)
-library(echarts4r)
-library(dplyr)
+# library(echarts4r)
+# library(dplyr)
 library(bigrquery)
 library(DBI)
 
@@ -20,8 +20,12 @@ ui <- dashboardPage(
           multiple = FALSE,
           accept = c(".json")
         ),
-        tableOutput("contents")
+        actionButton('upload', label = 'Подключиться'),
+        uiOutput('bq_projects'),
+        uiOutput('bq_datasets'),
+        tableOutput('billing')
       )
+      
     )
   )
 )
